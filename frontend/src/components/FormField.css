@@ -1,0 +1,141 @@
+/* ─────────────────────────────────────────────
+   FormField — Awwwards-grade input component
+   Architecture : BEM-like, scoped, zero side-effects
+   ───────────────────────────────────────────── */
+
+/* Conteneur principal — fournit le contexte de positionnement */
+.ff-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 1.5rem; /* espace pour le label flottant */
+}
+
+/* ── Input & Textarea ─────────────────────── */
+.ff-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  padding: 0.5rem 0 0.6rem;
+
+  font-family: var(--font-sans, 'Montserrat', sans-serif);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+  color: var(--theme-foreground, #f5f5f5);
+  line-height: 1.5;
+  caret-color: var(--color-primary, #11ad32);
+
+  /* Supprime toute apparence native */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ff-textarea {
+  resize: none;
+  display: block;
+}
+
+/* Supprime l'autofill jaune Chrome */
+.ff-input:-webkit-autofill,
+.ff-input:-webkit-autofill:hover,
+.ff-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--theme-foreground, #f5f5f5);
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ── Label flottant ───────────────────────── */
+.ff-label {
+  position: absolute;
+  left: 0;
+  top: 2rem; /* aligné sur la ligne de texte au repos */
+  pointer-events: none;
+
+  font-family: var(--font-sans, 'Montserrat', sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--theme-muted, #9ca3af);
+  letter-spacing: 0;
+
+  /* Transform-based pour 60fps garanti */
+  transform-origin: left center;
+  transform: translateY(0) scale(1);
+  opacity: 1;
+
+  transition:
+    transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity   0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    color     0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    letter-spacing 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* État flottant — focus OU champ rempli (CSS-only via :not(:placeholder-shown)) */
+.ff-input:focus + .ff-label,
+.ff-input:not(:placeholder-shown) + .ff-label {
+  transform: translateY(-2rem) scale(0.72);
+  color: var(--color-primary, #11ad32);
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+/* Quand rempli mais pas focus — couleur neutre discrète */
+.ff-input:not(:placeholder-shown):not(:focus) + .ff-label {
+  color: var(--theme-muted, #9ca3af);
+}
+
+/* ── Ligne inférieure ─────────────────────── */
+
+/* Ligne de base — gris fin */
+.ff-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--theme-border-strong, rgba(255,255,255,0.1));
+  pointer-events: none;
+}
+
+/* Ligne animée — scaleX depuis le centre */
+.ff-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-primary, #11ad32);
+  transform: scaleX(0);
+  transform-origin: center;
+  pointer-events: none;
+
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Activation de la ligne au focus via le sibling général (~) */
+.ff-input:focus ~ .ff-line {
+  transform: scaleX(1);
+}
+
+/* ── Mode clair ───────────────────────────── */
+[data-theme="light"] .ff-input {
+  color: var(--theme-foreground, #0a0a0a);
+}
+
+[data-theme="light"] .ff-wrapper::after {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .ff-label {
+  color: var(--theme-muted, #6b7280);
+}
+
+[data-theme="light"] .ff-input:not(:placeholder-shown):not(:focus) + .ff-label {
+  color: var(--theme-muted, #6b7280);
+}
+
+[data-theme="light"] .ff-input:-webkit-autofill,
+[data-theme="light"] .ff-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--theme-foreground, #0a0a0a);
+}

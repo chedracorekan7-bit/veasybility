@@ -1,0 +1,195 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Michroma&display=swap");
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant theme-dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+    --color-primary: #11ad32;
+    --color-primary-hover: #0e8c28;
+    --color-primary-foreground: #0a0a0a;
+
+    --color-bg: var(--theme-bg);
+    --color-surface: var(--theme-surface);
+    --color-surface-elevated: var(--theme-surface-elevated);
+    --color-surface-input: var(--theme-surface-input);
+    --color-foreground: var(--theme-foreground);
+    --color-muted: var(--theme-muted);
+    --color-muted-strong: var(--theme-muted-strong);
+    --color-border: var(--theme-border);
+    --color-border-strong: var(--theme-border-strong);
+
+    --color-dark: var(--theme-bg);
+    --color-darker: var(--theme-surface);
+    --color-light: var(--theme-foreground);
+
+    --font-display: "Michroma", sans-serif;
+    --font-sans: "Montserrat", sans-serif;
+    --font-michroma: "Michroma", sans-serif;
+}
+
+:root {
+    --theme-bg: #0a0a0a;
+    --theme-surface: #050505;
+    --theme-surface-elevated: #121212;
+    --theme-surface-input: #1a1a1a;
+    --theme-foreground: #f5f5f5;
+    --theme-muted: #9ca3af;
+    --theme-muted-strong: #6b7280;
+    --theme-border: rgba(255, 255, 255, 0.06);
+    --theme-border-strong: rgba(255, 255, 255, 0.1);
+    --theme-glow: rgba(17, 173, 50, 0.12);
+    --theme-shadow-primary: rgba(17, 173, 50, 0.4);
+}
+
+@layer base {
+    html {
+        transition:
+            background-color 0.35s ease,
+            color 0.35s ease;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    html {
+        color-scheme: dark;
+    }
+
+    body {
+        @apply bg-bg text-foreground antialiased font-sans font-normal;
+    }
+
+    /* Titres & branding — Michroma (400 uniquement) */
+    h1,
+    .text-hero {
+        font-family: var(--font-display);
+        @apply font-normal uppercase tracking-wider text-foreground;
+    }
+
+    h2 {
+        font-family: var(--font-display);
+        @apply font-normal uppercase tracking-wide text-foreground;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-display);
+        @apply font-normal uppercase tracking-wide text-foreground;
+    }
+
+    /* Corps de texte, menus & UI — Montserrat */
+    p,
+    li,
+    label,
+    input,
+    textarea,
+    select {
+        font-family: var(--font-sans);
+    }
+
+    nav,
+    button,
+    a {
+        font-family: var(--font-sans);
+    }
+
+    span {
+        font-family: inherit;
+    }
+}
+
+@layer utilities {
+    .font-display {
+        font-family: var(--font-display);
+    }
+
+    .font-sans {
+        font-family: var(--font-sans);
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+}
+
+@keyframes typewriter-cursor {
+    0%,
+    45% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.animate-typewriter-cursor {
+    animation: typewriter-cursor 1.05s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-typewriter-cursor {
+        animation: none;
+        opacity: 0;
+    }
+
+    .animate-marquee-left,
+    .animate-marquee-right {
+        animation: none;
+        transform: translateX(0);
+    }
+}
+
+/* Marquee bi-directionnel (style farihane.com) */
+@keyframes marquee-left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes marquee-right {
+    from {
+        transform: translateX(-50%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-marquee-left {
+    animation: marquee-left 50s linear infinite;
+}
+
+.animate-marquee-right {
+    animation: marquee-right 55s linear infinite;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--theme-surface);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--theme-muted-strong);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}

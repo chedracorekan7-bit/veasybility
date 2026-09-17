@@ -1,0 +1,38 @@
+# ==============================================================
+# Fichier robots.txt optimisé pour Veasybility
+# Domaine : https://veasybility.vercel.app
+# Rôle : Optimiser le budget de crawl et sécuriser le scraping
+# ==============================================================
+
+# 1. AUTORISATIONS GLOBALES
+# Autorise tous les moteurs de recherche bienveillants (Google, Bing, Yahoo)
+User-agent: *
+Allow: /
+
+# 2. OPTIMISATION DU BUDGET DE CRAWL
+# Bloque les dossiers système ou non pertinents pour l'indexation
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /_next/
+# Empêcher le crawl des pages de paramètres pour éviter le duplicate content
+Disallow: /*?category=*
+Disallow: /*?lang=*
+
+# 3. PROTECTION CONTRE LES BOTS D'INTELLIGENCE ARTIFICIELLE
+# Bloque les scrappers IA qui consomment de la bande passante sans bénéfice SEO
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Anthropic-ai
+Disallow: /
+
+# 4. LIEN VERS LE SITEMAP
+# Facilite l'exploration globale de Googlebot
+Sitemap: https://veasybility.vercel.app/sitemap.xml

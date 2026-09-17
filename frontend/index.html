@@ -1,0 +1,107 @@
+<!doctype html>
+<!-- L'attribut lang est défini sur fr par défaut. (Ajustable dynamiquement via i18next dans React) -->
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- ==================== METADATAS SEO DE BASE ==================== -->
+    <!-- Titre percutant avec le mot clé principal (< 60 caractères) -->
+    <title>Veasybility | Agence de communication digitale au Bénin</title>
+    
+    <!-- Description optimisée, incitative avec mots-clés (150-160 caractères) -->
+    <meta name="description" content="Veasybility est la meilleure agence de communication digitale au Bénin. Experts en marketing digital, création de site web et branding pour propulser votre marque." />
+    
+    <!-- Canonical URL pour consolider l'autorité SEO et éviter le contenu dupliqué -->
+    <link rel="canonical" href="https://veasybility.vercel.app/" />
+
+    <!-- ==================== HREFLANG (INTERNATIONALISATION) ==================== -->
+    <!-- Recommandé si vous avez un site traduit. À décommenter le jour où l'internationalisation par URL est en place -->
+    <!-- <link rel="alternate" hreflang="fr" href="https://veasybility.vercel.app/" /> -->
+    <!-- <link rel="alternate" hreflang="en" href="https://veasybility.vercel.app/en" /> -->
+    <!-- <link rel="alternate" hreflang="x-default" href="https://veasybility.vercel.app/" /> -->
+
+    <!-- ==================== OPEN GRAPH (FACEBOOK, LINKEDIN, ETC.) ==================== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Veasybility | Agence marketing digital au Bénin" />
+    <meta property="og:description" content="Boostez votre présence en ligne avec Veasybility, votre agence partenaire en création de site web et branding." />
+    <meta property="og:url" content="https://veasybility.vercel.app/" />
+    <!-- PERSONNALISATION : Créez une image 1200x630px et placez-la dans le dossier public/ sous le nom og-image.jpg -->
+    <meta property="og:image" content="https://veasybility.vercel.app/log.avif" />
+    <meta property="og:site_name" content="Veasybility" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- ==================== TWITTER CARDS ==================== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Veasybility | Agence de communication digitale" />
+    <meta name="twitter:description" content="Propulsez votre marque avec Veasybility, l'agence experte en création de site web et communication digitale au Bénin." />
+    <!-- PERSONNALISATION : Mettez ici votre @ utilisateur Twitter (ex: @Veasybility) si applicable -->
+    <!-- <meta name="twitter:site" content="@VotreCompteX" /> -->
+    <meta name="twitter:image" content="https://veasybility.vercel.app/log.avif" />
+
+    <!-- ==================== RESSOURCES & FONTS ==================== -->
+    <link rel="icon" type="image/png" href="/favicon-round.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- 
+      ==================== STRUCTURE SÉMANTIQUE (PRE-RENDER POUR BOTS) ====================
+      Googlebot sait exécuter du JS, mais fournir un squelette HTML propre aide massivement au SEO.
+      Dès que React charge via main.jsx, tout ce contenu dans #root sera remplacé par votre application.
+      C'est une excellente pratique pour garantir qu'un bot sans JS comprendra la thématique du site.
+    -->
+    <div id="root">
+      <header>
+        <nav>
+          <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/about">À propos</a></li>
+            <li><a href="/projects">Projets</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+      
+      <main>
+        <article>
+          <section>
+            <!-- H1 Unique structurant avec les mots-clés prioritaires -->
+            <h1>Veasybility : L'agence de communication digitale de référence au Bénin</h1>
+            <p>Notre agence marketing digital accompagne les entreprises avec des stratégies innovantes pour accroître leur visibilité en ligne.</p>
+          </section>
+
+          <section>
+            <!-- H2 Hiérarchique -->
+            <h2>Notre expertise en création site web au Bénin</h2>
+            
+            <!-- Exemple d'image SEO Compliante (Core Web Vitals & Accessibilité) -->
+            <!-- Note: width/height préviennent le CLS (Cumulative Layout Shift), lazy permet un chargement différé -->
+            <img 
+              src="/favicon-round.png" 
+              alt="Logo de l'agence de communication digitale Veasybility" 
+              width="200" 
+              height="200" 
+              loading="lazy" 
+              decoding="async" 
+            />
+            
+            <!-- H3 Complémentaires -->
+            <h3>Développement Web et Applications Mobiles</h3>
+            <p>Solutions sur-mesure pour e-commerce et vitrine d'entreprise.</p>
+            
+            <h3>Branding et Identité Visuelle</h3>
+            <p>Design impactant pour vous différencier de la concurrence.</p>
+          </section>
+        </article>
+      </main>
+
+      <footer>
+        <p>&copy; 2026 Veasybility - Agence marketing digital. Tous droits réservés.</p>
+      </footer>
+    </div>
+    
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
