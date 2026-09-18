@@ -23,15 +23,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY . .
 
 RUN composer install \
     --no-dev \
     --no-interaction \
     --no-progress \
     --optimize-autoloader
-
-COPY . .
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
