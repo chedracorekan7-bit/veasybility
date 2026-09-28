@@ -32,17 +32,33 @@ class ContactMessageController extends Controller
 
         $subject = $validated['subject'] ?? ('Nouveau Projet - ' . ($validated['company'] ?? $validated['name']));
 
-        $message = ContactMessage::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'subject' => $subject,
-            'message' => $dbMessage,
-        ]);
+        try {
+            $message = ContactMessage::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'subject' => $subject,
+                'message' => $dbMessage,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Erreur DB Contact: ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Erreur de base de données. Vérifiez vos variables d\'environnement DB sur Render.'
+            ], 500);
+        }
         
         $validated['subject'] = $subject;
         
-        // Send email to veasybility7@gmail.com
-        Mail::to('veasybility7@gmail.com')->send(new ContactFormMail($validated));
+        try {
+            // Send email to veasybility7@gmail.com
+            Mail::to('veasybility7@gmail.com')->send(new ContactFormMail($validated));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Erreur Mail Contact: ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Erreur d\'envoi d\'email. Vérifiez vos variables d\'environnement MAIL sur Render.'
+            ], 500);
+        }
         
         return response()->json(['success' => true, 'message' => 'Votre message a bien été envoyé.']);
     }
