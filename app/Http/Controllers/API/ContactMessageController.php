@@ -56,7 +56,7 @@ class ContactMessageController extends Controller
             \Illuminate\Support\Facades\Log::error('Erreur Mail Contact: ' . $e->getMessage());
             return response()->json([
                 'success' => false, 
-                'message' => 'Erreur d\'envoi d\'email. Vérifiez vos variables d\'environnement MAIL sur Render.'
+                'message' => 'Erreur SMTP : ' . $e->getMessage()
             ], 500);
         }
         
