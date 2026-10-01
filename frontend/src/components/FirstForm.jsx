@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFormspree } from '../hooks/useFormspree';
+
+// ─── Validateurs ──────────────────────────────────────────────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^[\+]?[\d\s\-\(\)]{7,20}$/;
 
 // Inline SVGs for social media icons
 const TikTokIcon = ({ size = 18 }) => (
@@ -72,8 +76,27 @@ export default function FirstForm() {
 
   const [selectedServices, setSelectedServices] = useState([]);
   const [errors, setErrors] = useState({});
+  const fieldRefs = useRef({});
 
   const { submit, status, errorMessage, reset } = useFormspree();
+
+  // ─── Validation enrichie ────────────────────────────────────────────────────
+  const validate = useCallback((data) => {
+    const e = {};
+    if (!data.name.trim())
+      e.name = 'Votre nom est requis.';
+    if (!data.company.trim())
+      e.company = 'Le nom de votre entreprise est requis.';
+    if (!data.email.trim())
+      e.email = 'Votre adresse e-mail est requise.';
+    else if (!EMAIL_RE.test(data.email.trim()))
+      e.email = 'Veuillez saisir une adresse e-mail valide (ex : vous@exemple.com).';
+    if (!data.phone.trim())
+      e.phone = 'Votre numéro de téléphone est requis.';
+    else if (!PHONE_RE.test(data.phone.trim()))
+      e.phone = 'Format invalide. Exemple : +33 6 12 34 56 78.';
+    return e;
+  }, []);
 
   const handleServiceToggle = (service) => {
     setSelectedServices(prev =>
@@ -84,25 +107,21 @@ export default function FirstForm() {
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    // Clear validation error when typing
-    if (errors[e.target.name]) {
-      setErrors(prev => ({ ...prev, [e.target.name]: false }));
-    }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Effacer l’erreur du champ dès que l’utilisateur re-saisit
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation locale
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = t('contact.field_required');
-    if (!formData.company.trim()) newErrors.company = t('contact.field_required');
-    if (!formData.email.trim()) newErrors.email = t('contact.field_required');
-    if (!formData.phone.trim()) newErrors.phone = t('contact.field_required');
-
+    const newErrors = validate(formData);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      // Accessibilité : focus sur le premier champ invalide
+      const firstInvalidField = ['name', 'company', 'email', 'phone'].find(f => newErrors[f]);
+      if (firstInvalidField) fieldRefs.current[firstInvalidField]?.focus();
       return;
     }
 
@@ -200,80 +219,108 @@ export default function FirstForm() {
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
                   {/* Full Name */}
                   <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <label
+                      htmlFor="ff-name"
+                      className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >
                       {t('contact.field_name')}
                     </label>
                     <input
+                      id="ff-name"
                       name="name"
                       type="text"
                       value={formData.name}
                       onChange={handleChange}
+                      ref={el => { fieldRefs.current.name = el; }}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? 'ff-name-error' : undefined}
+                      autoComplete="name"
                       className={`bg-transparent border-b ${errors.name ? 'border-red-500' : 'border-white/20'} py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#11ad32] transition-colors w-full`}
-                      placeholder=""
                     />
                     {errors.name && (
-                      <span className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider flex items-center gap-1">
-                        <AlertCircle size={10} /> {errors.name}
+                      <span id="ff-name-error" role="alert" className="text-[10px] font-bold text-red-400 mt-1 flex items-start gap-1">
+                        <AlertCircle size={10} className="mt-0.5 shrink-0" aria-hidden="true" /> {errors.name}
                       </span>
                     )}
                   </div>
 
                   {/* Company */}
                   <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <label
+                      htmlFor="ff-company"
+                      className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >
                       {t('contact.field_company')}
                     </label>
                     <input
+                      id="ff-company"
                       name="company"
                       type="text"
                       value={formData.company}
                       onChange={handleChange}
+                      ref={el => { fieldRefs.current.company = el; }}
+                      aria-invalid={!!errors.company}
+                      aria-describedby={errors.company ? 'ff-company-error' : undefined}
+                      autoComplete="organization"
                       className={`bg-transparent border-b ${errors.company ? 'border-red-500' : 'border-white/20'} py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#11ad32] transition-colors w-full`}
-                      placeholder=""
                     />
                     {errors.company && (
-                      <span className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider flex items-center gap-1">
-                        <AlertCircle size={10} /> {errors.company}
+                      <span id="ff-company-error" role="alert" className="text-[10px] font-bold text-red-400 mt-1 flex items-start gap-1">
+                        <AlertCircle size={10} className="mt-0.5 shrink-0" aria-hidden="true" /> {errors.company}
                       </span>
                     )}
                   </div>
 
                   {/* Email */}
                   <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <label
+                      htmlFor="ff-email"
+                      className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >
                       {t('contact.field_email')}
                     </label>
                     <input
+                      id="ff-email"
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
+                      ref={el => { fieldRefs.current.email = el; }}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'ff-email-error' : undefined}
+                      autoComplete="email"
                       className={`bg-transparent border-b ${errors.email ? 'border-red-500' : 'border-white/20'} py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#11ad32] transition-colors w-full`}
-                      placeholder=""
                     />
                     {errors.email && (
-                      <span className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider flex items-center gap-1">
-                        <AlertCircle size={10} /> {errors.email}
+                      <span id="ff-email-error" role="alert" className="text-[10px] font-bold text-red-400 mt-1 flex items-start gap-1">
+                        <AlertCircle size={10} className="mt-0.5 shrink-0" aria-hidden="true" /> {errors.email}
                       </span>
                     )}
                   </div>
 
                   {/* Phone */}
                   <div className="flex flex-col gap-2 relative">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <label
+                      htmlFor="ff-phone"
+                      className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                    >
                       {t('contact.field_phone')}
                     </label>
                     <input
+                      id="ff-phone"
                       name="phone"
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
+                      ref={el => { fieldRefs.current.phone = el; }}
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? 'ff-phone-error' : undefined}
+                      autoComplete="tel"
                       className={`bg-transparent border-b ${errors.phone ? 'border-red-500' : 'border-white/20'} py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#11ad32] transition-colors w-full`}
-                      placeholder=""
                     />
                     {errors.phone && (
-                      <span className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider flex items-center gap-1">
-                        <AlertCircle size={10} /> {errors.phone}
+                      <span id="ff-phone-error" role="alert" className="text-[10px] font-bold text-red-400 mt-1 flex items-start gap-1">
+                        <AlertCircle size={10} className="mt-0.5 shrink-0" aria-hidden="true" /> {errors.phone}
                       </span>
                     )}
                   </div>
@@ -322,9 +369,14 @@ export default function FirstForm() {
 
                 {/* Error Banner */}
                 {status === 'error' && (
-                  <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm mt-2">
-                    <AlertCircle size={16} className="shrink-0" />
-                    {errorMessage}
+                  <div
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm mt-2"
+                  >
+                    <AlertCircle size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{errorMessage}</span>
                   </div>
                 )}
 
@@ -332,7 +384,9 @@ export default function FirstForm() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="mt-6 w-full py-4 px-8 bg-black hover:bg-white text-white border border-white font-bold  hover:text-black  transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1 hover:translate-x-1"
+                  aria-busy={status === 'loading'}
+                  aria-label={status === 'loading' ? t('contact.sending') : t('contact.submit')}
+                  className="mt-6 w-full py-4 px-8 bg-black hover:bg-white text-white border border-white font-bold hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1 hover:translate-x-1"
                 >
                   {status === 'loading' ? (
                     <>

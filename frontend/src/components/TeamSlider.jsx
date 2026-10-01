@@ -14,6 +14,7 @@ import bg3 from '../assets/images/projects/bg3.avif';
 import bg4 from '../assets/images/projects/rose.avif';
 import brunel from '../assets/images/projects/brunel.avif';
 import coachella from '../assets/images/projects/coachella.avif';
+import manu from '../assets/images/projects/manu.avif';
 
 // roleKey = clé i18n pointant vers team.role_*
 const MEMBERS = [
@@ -23,6 +24,7 @@ const MEMBERS = [
   { id: 4, img: bg4,     name: 'Roseline DAKO',   roleKey: 'team.role_graphiste' },
   { id: 5, img: coachella,    name: 'Jean-Claude TOGNIBO',   roleKey: 'team.role_web_dev'},
   { id: 6, img: brunel,     name: 'Brunel KOUKPONOU',   roleKey: 'team.role_content'   },
+  { id: 7, img: manu,     name: 'Emmanuel KPOGBEMABOU',   roleKey: 'team.role_seo'   },
 ];
 
 export default function TeamSlider() {

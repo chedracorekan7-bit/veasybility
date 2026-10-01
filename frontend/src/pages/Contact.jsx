@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFormspree } from '../hooks/useFormspree';
+
+// ─── Validateurs ──────────────────────────────────────────────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^[\+]?[\d\s\-\(\)]{7,20}$/;
 
 function FAQItem({ q, a, index }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,8 +65,27 @@ export default function Contact() {
   const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', message: '' });
   const [selectedServices, setSelectedServices] = useState([]);
   const [errors, setErrors] = useState({});
+  const fieldRefs = useRef({});
 
   const { submit, status, errorMessage, reset } = useFormspree();
+
+  // ─── Validation enrichie ────────────────────────────────────────────────────
+  const validate = useCallback((data) => {
+    const e = {};
+    if (!data.name.trim())
+      e.name = 'Votre nom est requis.';
+    if (!data.company.trim())
+      e.company = 'Le nom de votre entreprise est requis.';
+    if (!data.email.trim())
+      e.email = 'Votre adresse e-mail est requise.';
+    else if (!EMAIL_RE.test(data.email.trim()))
+      e.email = 'Veuillez saisir une adresse e-mail valide (ex : vous@exemple.com).';
+    if (!data.phone.trim())
+      e.phone = 'Votre numéro de téléphone est requis.';
+    else if (!PHONE_RE.test(data.phone.trim()))
+      e.phone = 'Format invalide. Exemple : +33 6 12 34 56 78.';
+    return e;
+  }, []);
 
   const handleServiceToggle = (service) => {
     setSelectedServices(prev =>
@@ -71,20 +94,23 @@ export default function Contact() {
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    if (errors[e.target.name]) setErrors(prev => ({ ...prev, [e.target.name]: false }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Effacer l’erreur du champ dès que l’utilisateur re-saisit
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation locale
-    const newErrors = {};
-    if (!formData.name.trim())    newErrors.name    = t('contact.field_required');
-    if (!formData.company.trim()) newErrors.company = t('contact.field_required');
-    if (!formData.email.trim())   newErrors.email   = t('contact.field_required');
-    if (!formData.phone.trim())   newErrors.phone   = t('contact.field_required');
-    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    const newErrors = validate(formData);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // Accessibilité : focus sur le premier champ invalide
+      const firstInvalidField = ['name', 'company', 'email', 'phone'].find(f => newErrors[f]);
+      if (firstInvalidField) fieldRefs.current[firstInvalidField]?.focus();
+      return;
+    }
 
     const formattedSubject = `Nouveau Projet - ${formData.company}`;
     const servicesLabel = selectedServices.length > 0
@@ -187,19 +213,34 @@ export default function Contact() {
                     <div className="grid grid-cols-2 gap-8">
                       {fields.map(([field, type, label]) => (
                         <div key={field} className="flex flex-col gap-2">
-                          <label className="text-xs font-semibold text-muted-strong uppercase tracking-wider">{label}</label>
+                          <label
+                            htmlFor={`contact-${field}`}
+                            className="text-xs font-semibold text-muted-strong uppercase tracking-wider"
+                          >
+                            {label}
+                          </label>
                           <input
+                            id={`contact-${field}`}
                             name={field}
                             type={type}
                             value={formData[field]}
                             onChange={handleChange}
+                            ref={el => { fieldRefs.current[field] = el; }}
+                            aria-invalid={!!errors[field]}
+                            aria-describedby={errors[field] ? `contact-${field}-error` : undefined}
+                            autoComplete={field === 'email' ? 'email' : field === 'phone' ? 'tel' : field === 'name' ? 'name' : 'organization'}
                             className={`bg-transparent border-b ${
                               errors[field] ? 'border-red-500' : 'border-border-strong'
                             } py-3 text-foreground placeholder-muted-strong focus:outline-none focus:border-primary transition-colors w-full`}
                           />
                           {errors[field] && (
-                            <span className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider flex items-center gap-1">
-                              <AlertCircle size={10} /> {errors[field]}
+                            <span
+                              id={`contact-${field}-error`}
+                              role="alert"
+                              className="text-[10px] font-bold text-red-400 mt-1 flex items-start gap-1"
+                            >
+                              <AlertCircle size={10} className="mt-0.5 shrink-0" />
+                              {errors[field]}
                             </span>
                           )}
                         </div>
@@ -243,13 +284,17 @@ export default function Contact() {
                     <AnimatePresence>
                       {status === 'error' && (
                         <motion.div
-                          initial={{ opacity: 0, y: -10 }}
+                          key="form-error"
+                          initial={{ opacity: 0, y: -8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
-                          className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm"
+                          role="alert"
+                          aria-live="assertive"
+                          aria-atomic="true"
+                          className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm"
                         >
-                          <AlertCircle size={16} className="shrink-0" />
-                          {errorMessage}
+                          <AlertCircle size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
+                          <span>{errorMessage}</span>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -257,9 +302,9 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={status === 'loading'}
-                      whileHover={{ scale: status === 'loading' ? 1 : 1.02 }}
-                      whileTap={{ scale: status === 'loading' ? 1 : 0.98 }}
-                      className="mt-2 bg-transparent border border-white text-white font-bold py-4  hover:bg-white hover:text-black hover:-translate-y-1 hover:translate-x-1 transition-all duration-500  flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
+                      aria-busy={status === 'loading'}
+                      aria-label={status === 'loading' ? t('contact.sending') : t('contact.submit')}
+                      className="mt-2 bg-transparent border border-white text-white font-bold py-4 hover:bg-white hover:text-black hover:-translate-y-1 hover:translate-x-1 transition-all duration-500 flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {status === 'loading' ? (
                         <>

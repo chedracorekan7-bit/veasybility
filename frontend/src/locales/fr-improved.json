@@ -1,0 +1,17 @@
+{
+  "contact": {
+    "form_instructions": "Les champs marqués d'un * sont obligatoires.",
+    "field_name_hint": "Votre nom complet",
+    "field_company_hint": "Nom de votre entreprise ou organisation",
+    "field_email_hint": "Format : prenom@domaine.com",
+    "field_phone_hint": "Format : +33 6 12 34 56 78 ou 06 12 34 56 78",
+    "error_name_required": "Veuillez entrer votre nom complet.",
+    "error_company_required": "Veuillez entrer le nom de votre entreprise.",
+    "error_email_required": "Votre adresse e-mail est requise.",
+    "error_email_invalid": "Email invalide. Format attendu : prenom@domaine.com",
+    "error_phone_required": "Votre numéro de téléphone est requis.",
+    "error_phone_invalid": "Téléphone invalide. Exemples : +33 6 12 34 56 78 ou 06 12 34 56 78",
+    "error_form_summary": "{{count}} erreur détectée dans le formulaire. Veuillez corriger les champs marqués en rouge.",
+    "error_form_summary_plural": "{{count}} erreurs détectées dans le formulaire. Veuillez corriger les champs marqués en rouge."
+  }
+}
