@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import { useFormspree } from '../hooks/useFormspree';
 
 function FAQItem({ q, a, index }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,9 +60,9 @@ export default function Contact() {
 
   const [formData, setFormData] = useState({ name: '', company: '', email: '', phone: '', message: '' });
   const [selectedServices, setSelectedServices] = useState([]);
-  const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
+
+  const { submit, status, errorMessage, reset } = useFormspree();
 
   const handleServiceToggle = (service) => {
     setSelectedServices(prev =>
@@ -79,6 +77,8 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation locale
     const newErrors = {};
     if (!formData.name.trim())    newErrors.name    = t('contact.field_required');
     if (!formData.company.trim()) newErrors.company = t('contact.field_required');
@@ -86,33 +86,26 @@ export default function Contact() {
     if (!formData.phone.trim())   newErrors.phone   = t('contact.field_required');
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
 
-    setStatus('loading');
-    setErrorMessage('');
-
     const formattedSubject = `Nouveau Projet - ${formData.company}`;
+    const servicesLabel = selectedServices.length > 0
+      ? selectedServices.join(', ')
+      : 'Aucun service sélectionné';
 
-    try {
-      await axios.post(`${API_URL}/contact`, {
-        name: formData.name,
-        company: formData.company,
-        email: formData.email,
-        phone: formData.phone,
-        services: selectedServices,
-        subject: formattedSubject,
-        message: formData.message,
-      });
-      setStatus('success');
+    const success = await submit({
+      name:     formData.name,
+      company:  formData.company,
+      email:    formData.email,
+      phone:    formData.phone,
+      services: servicesLabel,
+      subject:  formattedSubject,
+      message:  formData.message || '(aucun message)',
+      _subject: formattedSubject,
+    });
+
+    if (success) {
       setFormData({ name: '', company: '', email: '', phone: '', message: '' });
       setSelectedServices([]);
-    } catch (err) {
-      if (!err.response) {
-        setStatus('success');
-        setFormData({ name: '', company: '', email: '', phone: '', message: '' });
-        setSelectedServices([]);
-      } else {
-        setStatus('error');
-        setErrorMessage(err.response?.data?.message || t('contact.field_required'));
-      }
+      setErrors({});
     }
   };
 
@@ -174,7 +167,7 @@ export default function Contact() {
                     <h3 className="text-2xl font-bold text-foreground">{t('contact.success_title')}</h3>
                     <p className="text-muted max-w-sm">{t('contact.success_desc')}</p>
                     <button
-                      onClick={() => setStatus('idle')}
+                      onClick={() => { reset(); setErrors({}); }}
                       className="mt-6 px-6 py-3 bg-foreground/5 text-foreground border border-border-strong rounded-xl hover:border-primary/40 transition-colors text-sm"
                     >
                       {t('contact.success_again')}

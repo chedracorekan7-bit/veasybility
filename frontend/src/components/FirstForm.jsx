@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, } from 'lucide-react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import { useFormspree } from '../hooks/useFormspree';
 
 // Inline SVGs for social media icons
 const TikTokIcon = ({ size = 18 }) => (
@@ -73,9 +71,9 @@ export default function FirstForm() {
   });
 
   const [selectedServices, setSelectedServices] = useState([]);
-  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [errors, setErrors] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
+
+  const { submit, status, errorMessage, reset } = useFormspree();
 
   const handleServiceToggle = (service) => {
     setSelectedServices(prev =>
@@ -95,53 +93,39 @@ export default function FirstForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Custom validation
+
+    // Validation locale
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = t('contact.field_required');
     if (!formData.company.trim()) newErrors.company = t('contact.field_required');
     if (!formData.email.trim()) newErrors.email = t('contact.field_required');
     if (!formData.phone.trim()) newErrors.phone = t('contact.field_required');
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    setStatus('loading');
-    setErrorMessage('');
-
-    // Pre-formatting message body for API (joins services + phone + original message)
     const formattedSubject = `Nouveau Projet - ${formData.company}`;
+    const servicesLabel = selectedServices.length > 0
+      ? selectedServices.join(', ')
+      : 'Aucun service sélectionné';
 
-    try {
-      await axios.post(`${API_URL}/contact`, {
-        name: formData.name,
-        company: formData.company,
-        email: formData.email,
-        phone: formData.phone,
-        services: selectedServices,
-        subject: formattedSubject,
-        message: formData.message,
-      });
-      setStatus('success');
+    const success = await submit({
+      name:     formData.name,
+      company:  formData.company,
+      email:    formData.email,
+      phone:    formData.phone,
+      services: servicesLabel,
+      subject:  formattedSubject,
+      message:  formData.message || '(aucun message)',
+      _subject: formattedSubject,
+    });
+
+    if (success) {
       setFormData({ name: '', company: '', email: '', phone: '', message: '' });
       setSelectedServices([]);
-    } catch (err) {
-      console.error('Erreur soumission formulaire:', err);
-      // Fallback local pour démo si le serveur laragon est éteint
-      if (!err.response) {
-        setTimeout(() => {
-          setStatus('success');
-          setFormData({ name: '', company: '', email: '', phone: '', message: '' });
-          setSelectedServices([]);
-        }, 1000);
-      } else {
-        setStatus('error');
-        setErrorMessage(
-          err.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.'
-        );
-      }
+      setErrors({});
     }
   };
 
@@ -197,7 +181,7 @@ export default function FirstForm() {
                   {t('contact.success_desc')}
                 </p>
                 <button
-                  onClick={() => setStatus('idle')}
+                  onClick={() => { reset(); setErrors({}); }}
                   className="mt-6 px-6 py-3 bg-white/5 text-white border border-white/10 rounded-xl hover:border-[#11ad32]/40 transition-colors text-sm font-medium"
                 >
                   {t('contact.success_again')}
