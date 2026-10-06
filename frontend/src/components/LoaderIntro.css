@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+
+.loader-intro-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+  font-family: 'Michroma', sans-serif;
+  overflow: hidden;
+}
+
+.loader-intro-container.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Percentage Counter - Bottom Right */
+.progress-percentage {
+  position: absolute;
+  bottom: 12px; /* Slight offset above the progress bar */
+  right: 24px;  /* Margin from the right edge */
+  font-size: 2rem;
+  color: #11AD32;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .progress-percentage {
+    bottom: 8px;
+    right: 16px;
+    font-size: 1.25rem;
+  }
+}
+
+/* Full width progress bar at bottom */
+.progress-full-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.progress-full-bar {
+  height: 100%;
+  background-color: #11AD32;
+  /* width is controlled via React inline style */
+}
+
+/* Dynamic Text Typewriter */
+.text-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(1.8rem, 6vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #FFFFFF;
+}
+
+.typewriter-dynamic {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.text-easy {
+  color: #11AD32;
+}
+
+.text-white {
+  color: #FFFFFF;
+}
+
+/* Blinking Cursor */
+.cursor-blink {
+  display: inline-block;
+  width: clamp(3px, 0.5vw, 6px);
+  height: 1em;
+  background-color: #11AD32;
+  margin-left: 6px;
+  animation: blink 0.8s step-end infinite;
+  transform: translateY(2px);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

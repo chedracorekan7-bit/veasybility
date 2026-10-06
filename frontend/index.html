@@ -43,7 +43,28 @@
     <link rel="icon" type="image/png" href="/favicon-round.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=block" rel="stylesheet" />
+    <style>
+      /* CRITICAL CSS TO PREVENT FOUC */
+      html, body {
+        background-color: #0a0a0a; /* Matches --theme-bg */
+        color: #0a0a0a; /* Hides text by matching background until CSS loads */
+        margin: 0;
+        padding: 0;
+      }
+      /* Hide the pre-rendered SEO skeleton visually but keep it in the DOM for bots */
+      #seo-content {
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      // Prevent background color flash for the intro loader
+      document.documentElement.style.backgroundColor = '#000000';
+      document.documentElement.style.color = '#000000';
+    </script>
   </head>
   <body>
     <!-- 
@@ -53,7 +74,8 @@
       C'est une excellente pratique pour garantir qu'un bot sans JS comprendra la thématique du site.
     -->
     <div id="root">
-      <header>
+      <div id="seo-content">
+        <header>
         <nav>
           <ul>
             <li><a href="/">Accueil</a></li>
@@ -100,6 +122,7 @@
       <footer>
         <p>&copy; 2026 Veasybility - Agence marketing digital. Tous droits réservés.</p>
       </footer>
+      </div>
     </div>
     
     <script type="module" src="/src/main.jsx"></script>

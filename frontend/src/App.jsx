@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import RouterScroll from './components/RouterScroll';
 import Navbar from './components/Navbar';
@@ -12,6 +13,8 @@ import Projects from './pages/Projects';
 import ProjectDetails from './pages/ProjectDetails';
 import Contact from './pages/Contact';
 import { useTheme } from './hooks/useTheme';
+import LoaderIntro from './components/LoaderIntro';
+
 
 function AppContent() {
   const location = useLocation();
@@ -41,12 +44,31 @@ function AppContent() {
 
 function App() {
   useTheme();
+  
+  const [introDone, setIntroDone] = useState(false);
+  const [appVisible, setAppVisible] = useState(false);
 
   return (
-    <Router>
-      <RouterScroll />
-      <AppContent />
-    </Router>
+    <>
+      {!introDone && (
+        <LoaderIntro 
+          onFadeOutStart={() => setAppVisible(true)} 
+          onComplete={() => setIntroDone(true)} 
+        />
+      )}
+      <div 
+        style={{ 
+          opacity: appVisible || introDone ? 1 : 0, 
+          transition: 'opacity 0.4s ease-in-out',
+          pointerEvents: appVisible || introDone ? 'auto' : 'none'
+        }}
+      >
+        <Router>
+          <RouterScroll />
+          <AppContent />
+        </Router>
+      </div>
+    </>
   );
 }
 
