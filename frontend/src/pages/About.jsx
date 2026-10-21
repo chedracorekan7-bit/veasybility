@@ -111,9 +111,9 @@ export default function About() {
         );
 
         gsap.set(mobileCards, { position: 'absolute', top: 0, left: 0, width: '100%' });
-        gsap.set(mobileCards[0], { opacity: 0, y: 80, x: 0 });
-        gsap.set(mobileCards[1], { opacity: 0, y: 0, x: -window.innerWidth });
-        gsap.set(mobileCards[2], { opacity: 0, y: 0, x: window.innerWidth });
+        gsap.set(mobileCards[0], { opacity: 1, y: 80, x: 0 });
+        gsap.set(mobileCards[1], { opacity: 1, y: 0, x: -window.innerWidth });
+        gsap.set(mobileCards[2], { opacity: 1, y: 0, x: window.innerWidth });
 
         const tl = gsap.timeline({
           scrollTrigger: {
