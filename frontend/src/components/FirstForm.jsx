@@ -201,7 +201,7 @@ export default function FirstForm() {
                 </p>
                 <button
                   onClick={() => { reset(); setErrors({}); }}
-                  className="mt-6 px-6 py-3 bg-white/5 text-white border border-white/10 rounded-xl hover:border-[#11ad32]/40 transition-colors text-sm font-medium"
+                  className="mt-6 px-6 py-3 bg-white/5 text-white border border-white/10 rounded-xl  hover:border-[#11ad32]/40 transition-colors text-sm font-medium"
                 >
                   {t('contact.success_again')}
                 </button>
@@ -386,7 +386,7 @@ export default function FirstForm() {
                   disabled={status === 'loading'}
                   aria-busy={status === 'loading'}
                   aria-label={status === 'loading' ? t('contact.sending') : t('contact.submit')}
-                  className="mt-6 w-full py-4 px-8 bg-black hover:bg-white text-white border border-white font-bold hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1 hover:translate-x-1"
+                  className="mt-6 w-full py-4 px-8 bg-black hover:bg-white border border-white font-bold hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1 hover:translate-x-1"
                 >
                   {status === 'loading' ? (
                     <>

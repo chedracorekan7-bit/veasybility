@@ -304,7 +304,7 @@ export default function Contact() {
                       disabled={status === 'loading'}
                       aria-busy={status === 'loading'}
                       aria-label={status === 'loading' ? t('contact.sending') : t('contact.submit')}
-                      className="mt-2 bg-transparent border border-white text-white font-bold py-4 hover:bg-white hover:text-black hover:-translate-y-1 hover:translate-x-1 transition-all duration-500 flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="mt-2 bg-transparent border border-white font-bold py-4 hover:bg-white hover:text-black hover:-translate-y-1 hover:translate-x-1 transition-all duration-500 flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {status === 'loading' ? (
                         <>

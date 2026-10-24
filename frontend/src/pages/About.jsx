@@ -312,10 +312,10 @@ export default function About() {
           </p>
           <Link
             to="/contact"
-            className="group inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold  hover:bg-white hover:text-primary-foreground transition-all duration-500 hover:-translate-y-1 hover:-translate-x-1"
+            className="group inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold hover:bg-white hover:text-black transition-all duration-500 hover:-translate-y-1 hover:-translate-x-1"
           >
-            {t('about.cta_btn')}
-            <ChevronRight size={18} className="group-hover:translate-x-0.5  transition-transform" />
+            <span className="group-hover:text-black transition-colors duration-500">{t('about.cta_btn')}</span>
+            <ChevronRight size={18} className="group-hover:translate-x-0.5 group-hover:text-black transition-all duration-500" />
           </Link>
         </motion.div>
       </section>

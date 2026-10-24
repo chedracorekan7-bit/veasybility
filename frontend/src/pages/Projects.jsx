@@ -196,7 +196,7 @@ export default function Projects() {
           <p className="text-muted mb-6 text-lg">{t('projects.cta_question')}</p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-10 py-4 bg-transparent text-white border  font-bold hover:bg-white hover:text-black transition-all duration-300 group hover:-translate-y-1 hover:-translate-x-1"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border  font-bold hover:bg-white hover:text-black transition-all duration-300 group hover:-translate-y-1 hover:-translate-x-1"
           >
             {t('projects.cta_btn')}
             <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

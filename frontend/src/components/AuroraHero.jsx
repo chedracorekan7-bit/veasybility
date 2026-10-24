@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 /**
  * AuroraHero Component
@@ -7,6 +8,13 @@ import { ChevronRight } from 'lucide-react';
  * Utilise des blur effects animés pour créer une ambiance luxe
  */
 export default function AuroraHero({ title, description, ctaText, ctaLink, ctaAction }) {
+  const isExternal = typeof ctaLink === 'string' && (
+    ctaLink.startsWith('http://') ||
+    ctaLink.startsWith('https://') ||
+    ctaLink.startsWith('//') ||
+    ctaLink.startsWith('mailto:') ||
+    ctaLink.startsWith('tel:')
+  );
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden bg-bg">
       {/* Northern Lights Effect - Multiple animated blur layers */}
@@ -97,35 +105,49 @@ export default function AuroraHero({ title, description, ctaText, ctaLink, ctaAc
         >
           {ctaAction ? (
             <button
+              type="button"
               onClick={ctaAction}
-              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-primary font-sans font-semibold rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-500 overflow-hidden "
+              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold hover:bg-white hover:text-black transition-all duration-500 overflow-hidden hover:-translate-y-1 hover:-translate-x-1 cursor-pointer"
             >
-
-              <span className="relative z-10">{ctaText}</span>
+              <span className="relative z-10 group-hover:text-black transition-colors duration-500">{ctaText}</span>
               <motion.div
                 className="relative z-10"
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.3 }}
               >
-                →
+                <ChevronRight size={18} className="group-hover:translate-x-0.5 group-hover:text-black transition-all duration-500" />
               </motion.div>
             </button>
-          ) : (
+          ) : isExternal ? (
             <a
               href={ctaLink}
-              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold hover:bg-white hover:text-primary-foreground transition-all duration-500 overflow-hidden hover:-translate-y-1 hover:-translate-x-1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold hover:bg-white hover:text-black transition-all duration-500 overflow-hidden hover:-translate-y-1 hover:-translate-x-1"
             >
-              <span className="relative z-10">{ctaText}</span>
+              <span className="relative z-10 group-hover:text-black transition-colors duration-500">{ctaText}</span>
               <motion.div
                 className="relative z-10"
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.3 }}
               >
-              <ChevronRight size={18} className="group-hover:translate-x-0.5  transition-transform" />
-
-                
+                <ChevronRight size={18} className="group-hover:translate-x-0.5 group-hover:text-black transition-all duration-500" />
               </motion.div>
             </a>
+          ) : (
+            <Link
+              to={ctaLink || '/projects'}
+              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-white text-white font-sans font-semibold hover:bg-white hover:text-black transition-all duration-500 overflow-hidden hover:-translate-y-1 hover:-translate-x-1"
+            >
+              <span className="relative z-10 group-hover:text-black transition-colors duration-500">{ctaText}</span>
+              <motion.div
+                className="relative z-10"
+                whileHover={{ x: 4 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ChevronRight size={18} className="group-hover:translate-x-0.5 group-hover:text-black transition-all duration-500" />
+              </motion.div>
+            </Link>
           )}
         </motion.div>
       </motion.div>
