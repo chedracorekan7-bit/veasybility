@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ChevronRight, Code, PenTool, LayoutTemplate, Video, TrendingUp, MegaphoneIcon } from 'lucide-react';
+import { ChevronRight, Code, PenTool, LayoutTemplate, Video, TrendingUp, MegaphoneIcon, Target, Search, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TypewriterText from '../components/TypewriterText';
@@ -28,6 +28,9 @@ export default function Home() {
     { icon: <Video size={32} />, titleKey: 'home.spec_video', descKey: 'home.spec_video_desc' },
     { icon: <TrendingUp size={32} />, titleKey: 'home.spec_marketing', descKey: 'home.spec_marketing_desc' },
     { icon: <MegaphoneIcon size={32} />, titleKey: 'home.spec_motion', descKey: 'home.spec_motion_desc' },
+    { icon: <Target size={32} />, titleKey: 'home.spec_ads', descKey: 'home.spec_ads_desc' },
+    { icon: <Search size={32} />, titleKey: 'home.spec_seo', descKey: 'home.spec_seo_desc' },
+    { icon: <Share2 size={32} />, titleKey: 'home.spec_social', descKey: 'home.spec_social_desc' },
   ];
 
   const projects = getProjectsWithImages().slice(0, 6);

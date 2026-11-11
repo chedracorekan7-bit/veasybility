@@ -29,10 +29,10 @@ const InstagramIcon = ({ size = 16 }) => (
 );
 
 const socials = [
-  { icon: FacebookIcon, href: '#', label: 'Facebook' },
-  { icon: LinkedinIcon, href: '#', label: 'LinkedIn' },
-  { icon: WhatsAppIcon, href: '#', label: 'WhatsApp' },
-  { icon: InstagramIcon, href: '#', label: 'Instagram' },
+  { icon: FacebookIcon, href: 'https://www.facebook.com/profile.php?id=61590631730391', label: 'Facebook' },
+  { icon: LinkedinIcon, href: 'https://bj.linkedin.com/in/chedrac-orekan-16a3ba384', label: 'LinkedIn' },
+  { icon: WhatsAppIcon, href: 'https://wa.me/+2290144014341', label: 'WhatsApp' },
+  { icon: InstagramIcon, href: 'https://www.instagram.com/chado3357?rpxt=MWwwNjg4aWl3NmVjZw==', label: 'Instagram' },
 ];
 
 export default function Footer() {
