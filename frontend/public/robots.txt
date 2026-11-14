@@ -1,6 +1,6 @@
 # ==============================================================
 # Fichier robots.txt optimisé pour Veasybility
-# Domaine : https://veasybility.vercel.app
+# Domaine : https://getveasybility.com
 # Rôle : Optimiser le budget de crawl et sécuriser le scraping
 # ==============================================================
 
@@ -35,4 +35,4 @@ Disallow: /
 
 # 4. LIEN VERS LE SITEMAP
 # Facilite l'exploration globale de Googlebot
-Sitemap: https://veasybility.vercel.app/sitemap.xml
+Sitemap: https://getveasybility.com/sitemap.xml
