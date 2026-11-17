@@ -19,7 +19,13 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://veasybility.vercel.app'],
+    'allowed_origins' => [
+        'https://veasybility.vercel.app',
+        'https://www.getveasybility.com',
+        'https://getveasybility.com',
+        'http://localhost:5173',
+        'http://localhost:3000',
+    ],
 
     'allowed_origins_patterns' => [],
 
