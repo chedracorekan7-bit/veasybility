@@ -24,10 +24,15 @@ return [
         'https://www.getveasybility.com',
         'https://getveasybility.com',
         'http://localhost:5173',
+        'http://127.0.0.1:5173',
         'http://localhost:3000',
+        'http://veasybility.test',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://.*\.getveasybility\.com$#',
+        '#^https://.*\.vercel\.app$#',
+    ],
 
     'allowed_headers' => ['*'],
 
