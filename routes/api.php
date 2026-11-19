@@ -13,4 +13,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/projects/{slug}', [ProjectController::class, 'show']);
 Route::post('/contact', [ContactMessageController::class, 'store']);
+
+// Routes Chatbot & Prospects
 Route::post('/chat', [ChatController::class, 'ask']);
+Route::get('/chat/history', [ChatController::class, 'history']);
+Route::post('/chat/lead', [ChatController::class, 'saveLead']);
+Route::get('/admin/conversations', [ChatController::class, 'adminConversations']);
