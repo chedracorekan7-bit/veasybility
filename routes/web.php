@@ -30,6 +30,11 @@ Route::get('/admin/leads', function (\Illuminate\Http\Request $request) {
     $totalMessages = 0;
 
     try {
+        // Auto-migrate si les tables n'existent pas encore
+        if (!\Illuminate\Support\Facades\Schema::hasTable('chat_conversations')) {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        }
+
         $conversations = \App\Models\ChatConversation::with(['messages' => function ($query) {
             $query->orderBy('created_at', 'asc');
         }])
