@@ -163,7 +163,7 @@ export default function Chatbot() {
                     Mr <span className="text-primary">Easy</span>
                   </h3>
                   <p className="text-[10px] text-muted flex items-center gap-1">
-                    Conseiller digital • {leadCaptured ? 'Lead qualifié ✨' : 'En ligne'}
+                     {leadCaptured ? 'Contact enregistré !' : 'En ligne'}
                   </p>
                 </div>
               </div>
