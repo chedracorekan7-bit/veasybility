@@ -174,7 +174,7 @@ PROMPT;
             ];
         }
 
-        $models = ['groq/compound', 'openai/gpt-oss-20b'];
+        $models = ['llama-3.1-8b-instant', 'llama3-8b-8192'];
         $payload = [
             'messages' => $messagesPayload,
             'temperature' => 0.7,
