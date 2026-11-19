@@ -46,6 +46,27 @@
             </div>
         </header>
 
+        @if(!empty($dbError))
+        <div class="my-6 p-5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-200">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 class="font-bold text-red-400 text-sm flex items-center gap-2">
+                        <span>⚠️ Erreur de synchronisation base de données</span>
+                    </h3>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Les tables du chatbot ne semblent pas encore avoir été créées sur la base de données de Render, ou la connexion a échoué.
+                    </p>
+                    <p class="font-mono bg-black/50 p-2.5 rounded-lg my-2 text-[11px] text-red-300 overflow-x-auto border border-red-500/20">
+                        {{ $dbError }}
+                    </p>
+                </div>
+                <a href="/admin/migrate?key={{ $secretKey ?? 'veasybility-secret-key-2026' }}" class="shrink-0 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                    <span>⚡ Lancer la migration en 1 clic</span>
+                </a>
+            </div>
+        </div>
+        @endif
+
         <!-- KPI STATS -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 my-8">
             <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 relative overflow-hidden">
