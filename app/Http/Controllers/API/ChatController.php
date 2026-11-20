@@ -19,9 +19,13 @@ class ChatController extends Controller
      */
     private function cleanBulletPoints(string $text): string
     {
+        // Supprime les puces markdown
         $text = preg_replace('/^[\s]*[\*\-][\s]+/m', '', $text);
         $text = preg_replace('/[\s]+[\*\-][\s]+/', ' ', $text);
         $text = preg_replace('/[\s]*[\*\-][\s]*/', '', $text);
+        // Supprime les emojis et symboles Unicode décoratifs
+        $text = preg_replace('/[\x{1F000}-\x{1FFFF}\x{2600}-\x{27BF}\x{FE00}-\x{FEFF}]/u', '', $text);
+        // Normalise les espaces
         $text = preg_replace('/\s+/', ' ', $text);
         $text = preg_replace('/^\s+|\s+$/m', '', $text);
         return trim($text);
@@ -165,7 +169,7 @@ RÈGLE 4 — PRIX
 Ne donne JAMAIS de prix, fourchette tarifaire ou estimation chiffrée. Chaque projet est unique. Explique que Veasybility établit des devis 100% sur mesure et gratuits après un premier échange.
 
 RÈGLE 5 — FORMAT DES RÉPONSES
-Réponds en 2 à 3 paragraphes courts maximum. N'utilise JAMAIS d'astérisques (*), de tirets (-) ou de markdown. Écris en phrases fluides et naturelles. Sois direct, chaleureux et orienté solution.
+Réponds en 2 à 3 paragraphes courts maximum. N'utilise JAMAIS d'astérisques (*), de tirets (-), de markdown, d'emojis ou de symboles décoratifs. Écris uniquement en phrases fluides et naturelles. Sois direct, chaleureux et orienté solution.
 
 RÈGLE 6 — TON COMMERCIAL
 Valide toujours le besoin du prospect avant de répondre ("Je comprends parfaitement...", "C'est effectivement un enjeu clé..."). Mets en valeur l'expertise et la valeur ajoutée de Veasybility sans survendre.
@@ -196,7 +200,7 @@ PROMPT;
         }
 
         // ── 4. Appel Groq avec fallback sur un second modèle ─────────────
-        $models  = ['llama-3.3-70b-versatile', 'llama3-8b-8192'];
+        $models  = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'];
         $payload = [
             'messages'    => $messagesPayload,
             'temperature' => 0.3,

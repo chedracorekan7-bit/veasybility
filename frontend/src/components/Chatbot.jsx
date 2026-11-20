@@ -25,6 +25,16 @@ export default function Chatbot() {
     return id;
   };
 
+  // Bloque le scroll du body quand le chatbot est ouvert
+  useEffect(() => {
+    if (isChatOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isChatOpen]);
+
   // Chargement de l'historique lors du premier rendu
   useEffect(() => {
     const sessionId = getSessionId();
