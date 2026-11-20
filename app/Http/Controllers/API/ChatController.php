@@ -176,10 +176,10 @@ Veasybility est une agence digitale full-service spécialisée dans : la créati
 MISSION DE VEASYBILITY : Aider les marques et entreprises à renforcer leur présence digitale, leur crédibilité et leurs performances commerciales grâce à des solutions créatives et technologiques sur mesure.
 PROMPT;
 
-        $apiKey = config('services.groq.key');
+        $apiKey = config('services.groq.key') ?: env('GROQ_API_KEY');
 
         if (!$apiKey) {
-            Log::error('GROQ_API_KEY non configurée dans les variables d\'environnement Render.');
+            Log::error('GROQ_API_KEY manquante. Verifiez les variables d\'environnement sur Render.');
             return response()->json(['reply' => 'Service de chat temporairement indisponible. Contactez-nous directement.'], 503);
         }
 
@@ -217,14 +217,17 @@ PROMPT;
                     break;
                 }
 
-                Log::warning("Groq model {$model} a echoue: " . $response->status() . ' - ' . $response->body());
+                Log::warning("Groq [{$model}] HTTP {$response->status()}: " . substr($response->body(), 0, 300));
 
             } catch (\Illuminate\Http\Client\ConnectionException $e) {
-                Log::error("Groq connexion impossible ({$model}): " . $e->getMessage());
+                Log::error("Groq connexion impossible [{$model}]: " . $e->getMessage());
+            } catch (\Throwable $e) {
+                Log::error("Groq erreur inattendue [{$model}]: " . $e->getMessage());
             }
         }
 
         if (!$cleanedReply) {
+            Log::error('Groq: tous les modeles ont echoue. API key presente: ' . (!empty($apiKey) ? 'oui' : 'non'));
             return response()->json(['reply' => 'Service temporairement indisponible. Reessayez dans un instant.'], 503);
         }
 
