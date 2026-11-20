@@ -34,15 +34,25 @@ class ChatController extends Controller
     {
         $updated = false;
 
+        // Email
         if (!$conversation->lead_email && preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $text, $emailMatches)) {
             $conversation->lead_email = strtolower($emailMatches[0]);
             $updated = true;
         }
 
-        if (!$conversation->lead_phone && preg_match('/(?:\+?\d{1,4}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{2,4}/', $text, $phoneMatches)) {
+        // Numéro de téléphone / WhatsApp (min 8 chiffres)
+        if (!$conversation->lead_phone && preg_match('/(?:\+?\d{1,4}[\s.\-]?)?(?:\(?\d{2,4}\)?[\s.\-]?)?\d{2,4}[\s.\-]?\d{2,4}[\s.\-]?\d{2,4}/', $text, $phoneMatches)) {
             $digitsOnly = preg_replace('/[^\d]/', '', $phoneMatches[0]);
             if (strlen($digitsOnly) >= 8) {
                 $conversation->lead_phone = trim($phoneMatches[0]);
+                $updated = true;
+            }
+        }
+
+        // Prénom / Nom : détecte un mot capitalisé isolé ou précédé de "je m'appelle", "c'est", "prénom"
+        if (!$conversation->lead_name) {
+            if (preg_match('/(?:je m\'appelle|mon (?:pr[eé]nom|nom)(?: est)?|c\'est|appelle[z-]?\s*moi)[\s:]+([A-ZÀ-Ÿ][a-zà-ÿ]+(?:\s[A-ZÀ-Ÿ][a-zà-ÿ]+)?)/u', $text, $nameMatches)) {
+                $conversation->lead_name = trim($nameMatches[1]);
                 $updated = true;
             }
         }
@@ -124,25 +134,46 @@ class ChatController extends Controller
         }
 
         // ── 2. Construction du prompt ──────────────────────────────────────
+        $leadAlreadyCaptured = $conversation
+            ? (bool)($conversation->lead_email || $conversation->lead_phone)
+            : false;
+
+        $leadContext = $leadAlreadyCaptured
+            ? "IMPORTANT : Le prospect a déjà fourni ses coordonnées. Ne les redemande JAMAIS. Remercie-le si c'est la première fois que tu le mentionnes dans cette session, puis continue à l'accompagner."
+            : "IMPORTANT : Tu n'as pas encore les coordonnées du prospect. Ton objectif est de les obtenir naturellement au bon moment (voir règle 3)."
+        ;
+
         $systemPrompt = <<<PROMPT
-Tu es Mr Easy, un conseiller commercial expert, chaleureux, persuasif et proactif pour l'agence digitale Veasybility.
-Ta mission est d'accompagner l'utilisateur, de qualifier ses besoins et de convertir cette opportunité en prospect qualifié (en obtenant son prénom et son adresse e-mail ou numéro WhatsApp).
+Tu es Mr Easy, le conseiller commercial de l'agence digitale Veasybility. Tu incarnes l'agence : tu parles en son nom, avec professionnalisme, chaleur et expertise.
 
---- CONSIGNES DE VENTE & RELATION CLIENT ---
+{$leadContext}
 
-1. TON & POSTURE : Professionnel, dynamique, courtois et orienté solutions. Utilise un langage clair, direct et bienveillant.
-2. ÉCOUTE ACTIVE & QUALIFICATION : Valide toujours le problème ou la demande du prospect ("C'est un excellent projet...", "Je comprends parfaitement votre besoin..."). Pose des questions ciblées sur son activité, son objectif et son délai.
-3. CAPTURE DE CONTACT (OBJECTIF CLÉ) :
-   - Dès que le prospect demande un devis, un tarif, ou décrit un projet précis, propose-lui chaleureusement : "Pour que notre équipe prépare une proposition personnalisée et adaptée à votre projet, quelle est votre adresse email (ou votre numéro WhatsApp) et votre prénom ?"
-   - Si le prospect a déjà partagé son email ou numéro, remercie-le chaleureusement et confirme que l'équipe Veasybility va le contacter très rapidement.
-4. RÈGLE SUR LES PRIX : Ne donne jamais de prix précis ni de fourchette tarifaire chiffrée. Explique que chaque projet est unique et que l'équipe Veasybility établit un devis 100% sur mesure gratuitement suite à leur prise de contact.
-5. CONCISION : Fais des réponses concises, captivantes et structurées (maximum 2 à 3 courts paragraphes).
-6. FORMAT : N'utilise JAMAIS d'astérisques (*) ni de tirets (-) comme puces dans tes réponses. Fais des phrases fluides avec des connecteurs logiques.
+=== RÈGLES ABSOLUES (à respecter sans exception) ===
 
---- SERVICES VEASYBILITY ---
-Développement de sites web vitrines modernes et performants, landing pages haute conversion, applications web et mobiles sur mesure, optimisation des performances web / UX / SEO technique, motion design, montage vidéo et branding digital complet.
+RÈGLE 1 — IDENTITÉ & PÉRIMÈTRE
+Tu représentes UNIQUEMENT Veasybility. Tu ne parles jamais d'autres agences, concurrents, outils tiers ou sujets hors de ton périmètre. Si une question est hors sujet, redirige poliment vers les services de Veasybility.
 
-MISSION : Aider les marques et entreprises à décupler leur visibilité, leur crédibilité et leurs conversions.
+RÈGLE 2 — ANTI-HALLUCINATION
+Tu ne dois JAMAIS inventer de chiffres, de statistiques, de noms de clients, de références ou de résultats. Si tu ne sais pas, dis-le honnêtement et propose de mettre le prospect en contact avec l'équipe pour une réponse précise.
+
+RÈGLE 3 — CAPTURE DE CONTACT (priorité absolue)
+Dès qu'un prospect exprime un besoin concret, décrit un projet ou demande un devis/tarif, pose cette question de manière naturelle et chaleureuse :
+"Pour que notre équipe vous prépare une proposition sur mesure et gratuite, pouvez-vous me donner votre prénom ainsi que votre email ou numéro WhatsApp ?"
+Ne pose cette question qu'UNE SEULE FOIS par conversation. Si le prospect donne ses coordonnées, remercie-le chaleureusement et confirme que l'équipe Veasybility le contactera très rapidement.
+
+RÈGLE 4 — PRIX
+Ne donne JAMAIS de prix, fourchette tarifaire ou estimation chiffrée. Chaque projet est unique. Explique que Veasybility établit des devis 100% sur mesure et gratuits après un premier échange.
+
+RÈGLE 5 — FORMAT DES RÉPONSES
+Réponds en 2 à 3 paragraphes courts maximum. N'utilise JAMAIS d'astérisques (*), de tirets (-) ou de markdown. Écris en phrases fluides et naturelles. Sois direct, chaleureux et orienté solution.
+
+RÈGLE 6 — TON COMMERCIAL
+Valide toujours le besoin du prospect avant de répondre ("Je comprends parfaitement...", "C'est effectivement un enjeu clé..."). Mets en valeur l'expertise et la valeur ajoutée de Veasybility sans survendre.
+
+=== SERVICES DE VEASYBILITY ===
+Veasybility est une agence digitale full-service spécialisée dans : la création de sites web vitrines et e-commerce haut de gamme, les landing pages à forte conversion, le développement d'applications web et mobiles sur mesure, le branding et l'identité visuelle, le motion design et la production vidéo, la gestion des réseaux sociaux et le community management, les campagnes publicitaires (Meta Ads, Google Ads), le SEO et l'AEO, ainsi que la stratégie de communication digitale 360°.
+
+MISSION DE VEASYBILITY : Aider les marques et entreprises à renforcer leur présence digitale, leur crédibilité et leurs performances commerciales grâce à des solutions créatives et technologiques sur mesure.
 PROMPT;
 
         $apiKey = config('services.groq.key');
@@ -165,11 +196,11 @@ PROMPT;
         }
 
         // ── 4. Appel Groq avec fallback sur un second modèle ─────────────
-        $models  = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'];
+        $models  = ['llama-3.3-70b-versatile', 'llama3-8b-8192'];
         $payload = [
             'messages'    => $messagesPayload,
-            'temperature' => 0.7,
-            'max_tokens'  => 1024,
+            'temperature' => 0.3,
+            'max_tokens'  => 512,
         ];
 
         $cleanedReply = null;
@@ -207,6 +238,11 @@ PROMPT;
                 $conversation->increment('messages_count', 2);
                 $conversation->last_message_at = now();
                 $conversation->save();
+
+                // Nouvelle tentative d'extraction si le nom n'est pas encore capturé
+                if (!$conversation->lead_name) {
+                    $this->extractLeadDetails($conversation, $userMessage);
+                }
             }
         } catch (\Throwable $dbEx) {
             Log::error('ChatController@ask DB save error: ' . $dbEx->getMessage());

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, UserCheck, PhoneCall, CheckCircle } from 'lucide-react';
+import { MessageSquare, X, Send, CheckCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import axios from 'axios';
 
@@ -12,9 +12,6 @@ export default function Chatbot() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [leadCaptured, setLeadCaptured] = useState(false);
-  const [showLeadForm, setShowLeadForm] = useState(false);
-  const [leadForm, setLeadForm] = useState({ name: '', emailOrPhone: '' });
-  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const messagesEndRef = useRef(null);
   const lastBotMessageRef = useRef(null);
 
@@ -108,39 +105,6 @@ export default function Chatbot() {
     }
   };
 
-  const handleLeadSubmit = async (e) => {
-    e.preventDefault();
-    if (!leadForm.emailOrPhone.trim()) return;
-
-    setIsSubmittingLead(true);
-    const sessionId = getSessionId();
-    const isEmail = leadForm.emailOrPhone.includes('@');
-
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/chat/lead`, {
-        session_id: sessionId,
-        name: leadForm.name.trim() || null,
-        email: isEmail ? leadForm.emailOrPhone.trim() : null,
-        phone: !isEmail ? leadForm.emailOrPhone.trim() : null,
-      });
-
-      setLeadCaptured(true);
-      setShowLeadForm(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: `Merci ${leadForm.name || ''} ! Vos coordonnées ont bien été enregistrées. Notre équipe vous recontactera très rapidement.`,
-          isBot: true,
-        },
-      ]);
-      setLeadForm({ name: '', emailOrPhone: '' });
-    } catch {
-      // Ignorer ou notifier
-    } finally {
-      setIsSubmittingLead(false);
-    }
-  };
-
   return (
     <>
       <AnimatePresence>
@@ -169,16 +133,6 @@ export default function Chatbot() {
               </div>
 
               <div className="flex items-center gap-2 relative z-10">
-                {!leadCaptured && (
-                  <button
-                    onClick={() => setShowLeadForm(!showLeadForm)}
-                    title="Laisser mes coordonnées"
-                    className="text-[11px] bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-2 py-1 rounded-full transition-colors flex items-center gap-1"
-                  >
-                    <PhoneCall size={11} />
-                    <span>Rappel</span>
-                  </button>
-                )}
                 {leadCaptured && (
                   <span className="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded-full flex items-center gap-1">
                     <CheckCircle size={11} />
@@ -193,57 +147,6 @@ export default function Chatbot() {
                 </button>
               </div>
             </div>
-
-            {/* FORMULAIRE RAPIDE DE COORDONNÉES (COLLAPSIBLE) */}
-            <AnimatePresence>
-              {showLeadForm && (
-                <motion.form
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  onSubmit={handleLeadSubmit}
-                  className="bg-surface-input border-b border-border p-3 flex flex-col gap-2 overflow-hidden text-xs"
-                >
-                  <p className="text-muted text-[11px] font-medium">
-                    Laissez vos coordonnées pour un devis ou rappel rapide :
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      placeholder="Votre prénom / nom"
-                      value={leadForm.name}
-                      onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                      className="bg-bg border border-border rounded-lg px-2.5 py-1.5 text-foreground placeholder:text-muted/60 focus:outline-none focus:border-primary"
-                    />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Email ou WhatsApp"
-                      value={leadForm.emailOrPhone}
-                      onChange={(e) => setLeadForm({ ...leadForm, emailOrPhone: e.target.value })}
-                      className="bg-bg border border-border rounded-lg px-2.5 py-1.5 text-foreground placeholder:text-muted/60 focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2 mt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowLeadForm(false)}
-                      className="text-muted hover:text-foreground px-2 py-1 rounded text-[11px]"
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmittingLead || !leadForm.emailOrPhone.trim()}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3 py-1 rounded-lg text-[11px] transition-colors disabled:opacity-50 flex items-center gap-1"
-                    >
-                      <UserCheck size={12} />
-                      <span>{isSubmittingLead ? 'Envoi...' : 'Valider'}</span>
-                    </button>
-                  </div>
-                </motion.form>
-              )}
-            </AnimatePresence>
 
             {/* MESSAGES */}
             <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
