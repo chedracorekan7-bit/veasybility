@@ -19,14 +19,3 @@ Route::post('/chat', [ChatController::class, 'ask']);
 Route::get('/chat/history', [ChatController::class, 'history']);
 Route::post('/chat/lead', [ChatController::class, 'saveLead']);
 Route::get('/admin/conversations', [ChatController::class, 'adminConversations']);
-
-// Route de diagnostic temporaire
-Route::get('/debug-env', function () {
-    $key = config('services.groq.key');
-    return response()->json([
-        'groq_key_set'    => !empty($key),
-        'groq_key_prefix' => $key ? substr($key, 0, 8) . '...' : null,
-        'app_env'         => config('app.env'),
-        'app_key_set'     => !empty(config('app.key')),
-    ]);
-});

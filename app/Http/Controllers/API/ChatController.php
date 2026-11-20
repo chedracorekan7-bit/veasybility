@@ -165,7 +165,7 @@ PROMPT;
         }
 
         // ── 4. Appel Groq avec fallback sur un second modèle ─────────────
-        $models  = ['llama-3.1-8b-instant', 'llama3-8b-8192'];
+        $models  = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'];
         $payload = [
             'messages'    => $messagesPayload,
             'temperature' => 0.7,
