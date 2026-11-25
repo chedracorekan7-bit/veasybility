@@ -14,6 +14,7 @@ import ProjectDetails from './pages/ProjectDetails';
 import Contact from './pages/Contact';
 import { useTheme } from './hooks/useTheme';
 import LoaderIntro from './components/LoaderIntro';
+import { trackPageView } from './utils/analytics';
 
 
 function AppContent() {
@@ -33,6 +34,7 @@ function AppContent() {
         page_path: location.pathname + location.search,
       });
     }
+    trackPageView(location.pathname);
   }, [location]);
 
   return (
