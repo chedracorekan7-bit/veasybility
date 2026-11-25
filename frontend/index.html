@@ -151,6 +151,8 @@
         <!-- Optimisation Performance : Préconnexion & Résolution DNS pour les tags marketing -->
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
 
@@ -179,19 +181,27 @@
 
         <!-- ==================== TRACKING & MARKETING RETARGETING ==================== -->
 
-        <!-- 1. Google Ads Retargeting Tag (gtag.js) -->
-        <!-- Note : Chargement 100% asynchrone (async) pour préserver le Critical Rendering Path -->
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=AW-2155788994"
-        ></script>
+        <!-- 1. Google Tag Manager — Doit être le PREMIER tag marketing chargé -->
+        <!-- GTM orchestre GA4, Google Ads et tous les autres tags depuis l'interface GTM -->
+        <script>
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-W24VQNTF');
+        </script>
+
+        <!-- 2. Google Analytics 4 + Google Ads via gtag.js (chargement direct en parallèle de GTM) -->
+        <!-- Garantit le tracking GA4 même si GTM n'est pas encore configuré -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2LXBHYDXH"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
-            gtag("config", "AW-2155788994");
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-G2LXBHYDXH', {
+                send_page_view: false
+            });
+            gtag('config', 'AW-2155788994');
         </script>
 
         <!-- 2. Meta Pixel Code (Facebook & Instagram) -->
@@ -226,6 +236,18 @@
         <!-- End Meta Pixel Code -->
     </head>
     <body>
+        <!-- ==================== GOOGLE TAG MANAGER (NOSCRIPT FALLBACK) ==================== -->
+        <!-- Recommandation officielle Google : à placer immédiatement après l'ouverture de <body> -->
+        <noscript>
+            <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-W24VQNTF"
+                height="0"
+                width="0"
+                style="display:none;visibility:hidden"
+            ></iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
         <!-- ==================== META PIXEL (NOSCRIPT FALLBACK) ==================== -->
         <!-- Recommandation officielle Meta : à placer immédiatement après l'ouverture de <body> -->
         <noscript>

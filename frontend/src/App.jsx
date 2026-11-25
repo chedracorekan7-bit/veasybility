@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import RouterScroll from './components/RouterScroll';
 import Navbar from './components/Navbar';
@@ -19,6 +19,21 @@ import LoaderIntro from './components/LoaderIntro';
 function AppContent() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', {
+        page_path: location.pathname + location.search,
+        page_location: window.location.href,
+      });
+    }
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'page_view',
+        page_path: location.pathname + location.search,
+      });
+    }
+  }, [location]);
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-foreground font-sans overflow-x-hidden transition-colors duration-300">
