@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useFormspree } from '../hooks/useFormspree';
+import { trackFormSubmit, trackFormStart, trackServiceSelect } from '../utils/analytics';
 
 // ─── Validateurs ──────────────────────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -99,11 +100,11 @@ export default function FirstForm() {
   }, []);
 
   const handleServiceToggle = (service) => {
-    setSelectedServices(prev =>
-      prev.includes(service)
-        ? prev.filter(s => s !== service)
-        : [...prev, service]
-    );
+    setSelectedServices(prev => {
+      const isSelected = prev.includes(service);
+      if (!isSelected) trackServiceSelect(service, 'home_form');
+      return isSelected ? prev.filter(s => s !== service) : [...prev, service];
+    });
   };
 
   const handleChange = (e) => {
@@ -142,6 +143,7 @@ export default function FirstForm() {
     });
 
     if (success) {
+      trackFormSubmit('home_form', servicesLabel);
       setFormData({ name: '', company: '', email: '', phone: '', message: '' });
       setSelectedServices([]);
       setErrors({});
